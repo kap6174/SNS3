@@ -1,0 +1,8 @@
+05-04-25 15:02:46 — Intrusion Type: Port Scanning — Attacker IP: 69.173.158.64 — Targeted Ports: 41518,41534,41538,41540,41548,41554,41568 — Time Span: 0.26s
+05-04-25 15:02:46 — System Event: BLOCK — Blocked IP 69.173.158.64 for Port Scanning
+05-04-25 15:03:06 — Intrusion Type: OS Fingerprinting — Attacker IP: 10.1.37.194 — Flags: S,FA,A,PA,RA — Time Span: 0.92s
+05-04-25 15:03:06 — System Event: BLOCK — Blocked IP 10.1.37.194 for OS Fingerprinting
+05-04-25 15:03:08 — Intrusion Type: OS Fingerprinting — Attacker IP: 220.150.223.50 — Flags: FPA,FA,SA,A,PA — Time Span: 3.28s
+05-04-25 15:03:08 — System Event: BLOCK — Blocked IP 220.150.223.50 for OS Fingerprinting
+05-04-25 15:03:11 — Intrusion Type: OS Fingerprinting — Attacker IP: 74.118.186.107 — Flags: FPA,FA,SA,A,PA — Time Span: 6.27s
+05-04-25 15:03:11 — System Event: BLOCK — Blocked IP 74.118.186.107 for OS Fingerprinting
