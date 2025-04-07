@@ -6,7 +6,7 @@ import threading
 from network_monitor import NetworkMonitor
 from detection_engine import DetectionEngine
 from prevention_system import PreventionSystem
-from alert_logger import AlertLogger
+from logger import Logger
 from cli_interface import CommandLineInterface
 import time
 
@@ -14,7 +14,7 @@ def main():
     packet_queue = queue.Queue()
     alert_queue = queue.Queue()
     
-    logger = AlertLogger()
+    logger = Logger()
     prevention = PreventionSystem(logger)
     monitor = NetworkMonitor(packet_queue)
     detection = DetectionEngine(packet_queue, alert_queue, logger)

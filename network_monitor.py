@@ -1,8 +1,9 @@
-from scapy.all import sniff, IP, TCP
+from scapy.all import sniff, IP, TCP, UDP, ICMP
 import time
 import threading
 import queue
-from datetime import datetime
+from datetime import datetime, timedelta
+import hashlib
 
 class NetworkMonitor:
     def __init__(self, packet_queue, interface="lo"):
@@ -11,6 +12,7 @@ class NetworkMonitor:
         self.stop_sniffing = threading.Event()
         self.sniffer_thread = None
         self.is_running = False
+        self.seen_packets = {} 
         
     def start_monitoring(self):
         if self.is_running:
@@ -47,27 +49,54 @@ class NetworkMonitor:
             print(f"Error in packet sniffing: {e}")
     
     def _process_packet(self, packet):
-        if IP in packet and TCP in packet:
+        if IP in packet:
+            protocol = None
+            src_port = None
+            dst_port = None
+            flags = None
+
+            if TCP in packet:
+                protocol = 'TCP'
+                src_port = packet[TCP].sport
+                dst_port = packet[TCP].dport
+                flags = self._tcp_flags_to_str(packet[TCP].flags)
+            elif ICMP in packet:
+                protocol = 'ICMP'
+            else:
+                return
+                
+
+            sig_source = f"{packet[IP].src}-{packet[IP].dst}-{protocol}-{src_port}-{dst_port}-{flags}"
+            signature = hashlib.md5(sig_source.encode()).hexdigest()
+
+            now = datetime.now()
+            self.seen_packets = {sig: ts for sig, ts in self.seen_packets.items() 
+                                 if now - ts < timedelta(seconds=5)}
+
+            if signature in self.seen_packets:
+                return
+            else:
+                self.seen_packets[signature] = now
+
             packet_info = {
-                'timestamp': datetime.now(),
+                'timestamp': now,
                 'src_ip': packet[IP].src,
                 'dst_ip': packet[IP].dst,
-                'protocol': 'TCP',
-                'src_port': packet[TCP].sport,
-                'dst_port': packet[TCP].dport,
-                'flags': packet[TCP].flags,
+                'protocol': protocol,
+                'src_port': src_port,
+                'dst_port': dst_port,
+                'flags': flags,
                 'raw_packet': packet
             }
-            
+
             self.packet_queue.put(packet_info)
-            
-            # For viewing live traffic
+
             if hasattr(self, 'debug_mode') and self.debug_mode:
-                flags_str = self._tcp_flags_to_str(packet[TCP].flags)
-                print(f"{packet_info['timestamp'].strftime('%H:%M:%S')} "
-                      f"{packet_info['src_ip']}:{packet_info['src_port']} → "
-                      f"{packet_info['dst_ip']}:{packet_info['dst_port']} "
-                      f"[{flags_str}]")
+                timestamp = now.strftime('%H:%M:%S')
+                src = f"{packet_info['src_ip']}:{src_port}" if src_port else packet_info['src_ip']
+                dst = f"{packet_info['dst_ip']}:{dst_port}" if dst_port else packet_info['dst_ip']
+                extra = f"[{flags}]" if flags else ""
+                print(f"{timestamp} {src} → {dst} ({protocol}) {extra}")
     
     def _tcp_flags_to_str(self, flags):
         flag_map = {

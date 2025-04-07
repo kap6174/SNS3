@@ -1,4 +1,47 @@
-07-04-25 11:55:25 — Intrusion Type: Port Scanning — Attacker IP: 127.0.0.1 — Targeted Ports: 15442,15443,15444,15445,15446,15447,58555 — Time Span: 2.61s
-07-04-25 11:55:25 — System Event: BLOCK — Blocked IP 127.0.0.1 for Port Scanning
-07-04-25 11:56:17 — Intrusion Type: OS Fingerprinting — Attacker IP: 127.0.0.1 — Flags: S,RA,FA,SA,F — Time Span: 3.05s
-07-04-25 11:57:11 — System Event: UNBLOCK — Unblocked IP 127.0.0.1
+07-04-25 16:49:00 — Intrusion Type: Multiple Port Scanning — Attacker IP: 127.0.0.1 — Time Span: 5.15s
+07-04-25 16:49:25 — Intrusion Type: Multiple Port Scanning — Attacker IP: 127.0.0.1 — Time Span: 13.40s
+07-04-25 16:54:53 — Intrusion Type: Multiple Port Scanning — Attacker IP: 127.0.0.1 — Time Span: 4.14s
+07-04-25 16:54:53 — System Event: BLOCK — Blocked IP 127.0.0.1 for Multiple Port Scanning
+07-04-25 17:04:46 — Intrusion Type: Sequential Port Scanning — Attacker IP: 192.168.0.1 — Time Span: 1.57s
+07-04-25 17:04:46 — System Event: BLOCK — Blocked IP 192.168.0.1 for Sequential Port Scanning
+07-04-25 17:04:58 — Intrusion Type: Multiple Port Scanning — Attacker IP: 192.168.0.1 — Time Span: 13.69s
+07-04-25 17:05:11 — Intrusion Type: Multiple Port Scanning — Attacker IP: 192.168.0.1 — Time Span: 3.10s
+07-04-25 17:06:40 — Intrusion Type: Multiple Port Scanning — Attacker IP: 192.168.0.1 — Time Span: 3.14s
+07-04-25 17:16:47 — Intrusion Type: Multiple Port Scanning — Attacker IP: 192.168.0.1 — Time Span: 3.15s
+07-04-25 17:16:47 — System Event: BLOCK — Blocked IP 192.168.0.1 for Multiple Port Scanning
+07-04-25 17:16:53 — Intrusion Type: Sequential Port Scanning — Attacker IP: 192.168.0.1 — Time Span: 8.70s
+07-04-25 17:17:06 — System Event: UNBLOCK — Unblocked IP 192.168.0.1
+07-04-25 17:18:16 — System Event: UNBLOCK — Unblocked IP 127.0.0.1
+07-04-25 17:18:16 — System Event: UNBLOCK — Unblocked IP 192.168.0.1
+07-04-25 17:18:33 — System Event: UNBLOCK — Unblocked IP 127.0.0.1
+07-04-25 17:28:19 — Intrusion Type: Sequential Port Scanning — Attacker IP: 192.168.0.1 — Time Span: 6.45s
+07-04-25 17:28:19 — System Event: BLOCK — Blocked IP 192.168.0.1 for Sequential Port Scanning
+07-04-25 17:28:33 — Intrusion Type: Sequential Port Scanning — Attacker IP: 192.168.0.1 — Time Span: 1.57s
+07-04-25 17:29:21 — Intrusion Type: OS Fingerprinting — Attacker IP: 192.168.0.1 — Flags: SYN|ACK,FIN|SYN,SYN,RST,FIN|SYN|PSH|URG — Time Span: 2.63s
+07-04-25 17:29:22 — Intrusion Type: Multiple Port Scanning — Attacker IP: 192.168.0.1 — Time Span: 3.16s
+07-04-25 17:30:09 — System Event: UNBLOCK — Unblocked IP 192.168.0.1
+07-04-25 17:30:33 — Intrusion Type: Multiple Port Scanning — Attacker IP: 192.168.0.1 — Time Span: 3.15s
+07-04-25 17:30:33 — System Event: BLOCK — Blocked IP 192.168.0.1 for Multiple Port Scanning
+07-04-25 17:33:16 — Intrusion Type: Multiple Port Scanning — Attacker IP: 192.168.0.1 — Time Span: 3.14s
+07-04-25 17:33:16 — System Event: BLOCK — Blocked IP 192.168.0.1 for Multiple Port Scanning
+07-04-25 17:34:14 — Intrusion Type: Multiple Port Scanning — Attacker IP: 192.168.0.1 — Time Span: 3.14s
+07-04-25 17:34:14 — System Event: BLOCK — Blocked IP 192.168.0.1 for Multiple Port Scanning
+07-04-25 17:38:14 — System Event: UNBLOCK — Unblocked IP 192.168.0.1
+07-04-25 17:38:22 — Intrusion Type: Multiple Port Scanning — Attacker IP: 192.168.0.1 — Targeted Ports: 943,10315,20720,34489,43635,56847,65422 — Time Span: 3.15s
+07-04-25 17:38:22 — System Event: BLOCK — Blocked IP 192.168.0.1 for Multiple Port Scanning
+07-04-25 17:39:09 — Intrusion Type: Multiple Port Scanning — Attacker IP: 192.168.0.1 — Targeted Ports: 31,174,339,674,893,895,972 — Time Span: 3.14s
+07-04-25 17:52:21 — Intrusion Type: OS Fingerprinting — Attacker IP: 192.168.0.1 — Flags: RST,FIN|ACK,FIN|SYN|PSH|URG,RST|ACK,FIN — Time Span: 2.09s
+07-04-25 17:52:21 — System Event: BLOCK — Blocked IP 192.168.0.1 for OS Fingerprinting
+07-04-25 17:52:22 — Intrusion Type: Multiple Port Scanning — Attacker IP: 192.168.0.1 — Targeted Ports: 108,123,271,314,557,726,859 — Time Span: 3.14s
+07-04-25 17:55:07 — Intrusion Type: Multiple Port Scanning — Attacker IP: 192.168.0.1 — Targeted Ports: 27483,33315,38062,44573,47482,50165,59170 — Time Span: 3.10s
+07-04-25 17:55:24 — Intrusion Type: Multiple Port Scanning — Attacker IP: 192.168.0.1 — Targeted Ports: 23211,23212,23213,23214,23215,58238,58239 — Time Span: 8.61s
+07-04-25 17:56:12 — Intrusion Type: Multiple Port Scanning — Attacker IP: 192.168.0.1 — Targeted Ports: 25832,25833,42210,42211,42212,42213,42214 — Time Span: 12.23s
+07-04-25 18:00:10 — Intrusion Type: Sequential Port Scanning — Attacker IP: 192.168.0.1 — Targeted Ports: 52806,52807,52808,52809 — Time Span: 1.55s
+07-04-25 18:00:10 — System Event: BLOCK — Blocked IP 192.168.0.1 for Sequential Port Scanning
+07-04-25 18:00:14 — Intrusion Type: Multiple Port Scanning — Attacker IP: 192.168.0.1 — Targeted Ports: 12772,12773,52806,52807,52808,52809,52810 — Time Span: 5.91s
+07-04-25 18:00:22 — Intrusion Type: Multiple Port Scanning — Attacker IP: 192.168.0.1 — Targeted Ports: 12774,12775,12776,32436,32437,32438,32439 — Time Span: 7.18s
+07-04-25 18:00:22 — Intrusion Type: Sequential Port Scanning — Attacker IP: 192.168.0.1 — Targeted Ports: 32436,32437,32438,32439 — Time Span: 7.18s
+07-04-25 18:00:36 — Intrusion Type: Sequential Port Scanning — Attacker IP: 192.168.0.1 — Targeted Ports: 38006,38007,38008,38009 — Time Span: 1.56s
+07-04-25 18:00:42 — Intrusion Type: Multiple Port Scanning — Attacker IP: 192.168.0.1 — Targeted Ports: 38006,38007,38008,38009,38010,48868,54952 — Time Span: 6.91s
+07-04-25 18:00:54 — Intrusion Type: Multiple Port Scanning — Attacker IP: 192.168.0.1 — Targeted Ports: 51,638,896,996,1002,1021,37898 — Time Span: 8.75s
+07-04-25 18:00:54 — Intrusion Type: OS Fingerprinting — Attacker IP: 192.168.0.1 — Flags: FIN|PSH|URG,FIN|ACK,SYN,FIN|SYN,RST|ACK — Time Span: 8.75s

@@ -1,4 +1,3 @@
-import platform
 import subprocess
 import re
 from datetime import datetime
@@ -7,7 +6,6 @@ class PreventionSystem:
     def __init__(self, logger):
         self.logger = logger
         self.blocked_ips = {}  # {ip: {'timestamp': str, 'reason': str}}
-        self.os_type = platform.system()  # 'Windows', 'Linux'
     
     def block_ip(self, ip_address, reason="Suspicious Activity"):
         if ip_address in self.blocked_ips:
@@ -46,6 +44,7 @@ class PreventionSystem:
             return False
     
     def get_blocked_ips(self):
+        self.sync_with_system()
         return self.blocked_ips
     
     def clear_block_list(self):
