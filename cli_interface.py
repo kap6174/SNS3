@@ -26,7 +26,8 @@ class CommandLineInterface:
         5. Display Blocked IPs
         6. Clear Block List
         7. Unblock an IP
-        8. Exit
+        8. Generate Summary Report
+        9. Exit
         
         Enter your choice: """
         
