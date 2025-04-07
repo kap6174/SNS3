@@ -1,20 +1,8 @@
-#!/usr/bin/env python3
 import os
-import sys
 import time
-from datetime import datetime
 
 class CommandLineInterface:
     def __init__(self, network_monitor, detection_engine, prevention_system, logger):
-        """
-        Initialize the Command Line Interface
-        
-        Args:
-            network_monitor: NetworkMonitor instance
-            detection_engine: DetectionEngine instance
-            prevention_system: PreventionSystem instance
-            logger: AlertLogger instance
-        """
         self.network_monitor = network_monitor
         self.detection_engine = detection_engine
         self.prevention_system = prevention_system
@@ -22,23 +10,15 @@ class CommandLineInterface:
         self.running = True
     
     def clear_screen(self):
-        """Clear the terminal screen"""
         os.system('cls' if os.name == 'nt' else 'clear')
     
-    def display_banner(self):
-        """Display the NIDS banner"""
-        banner = """
+    def display_menu(self):
+        menu = """
         #########################################################
         #                                                       #
         #             Network Intrusion Detection System        #
         #                                                       #
         #########################################################
-        """
-        print(banner)
-    
-    def display_menu(self):
-        """Display the main menu options"""
-        menu = """
         1. Start IDS
         2. Stop IDS
         3. View Live Traffic
@@ -53,10 +33,8 @@ class CommandLineInterface:
         return input(menu)
     
     def start(self):
-        """Start the CLI interface"""
         while self.running:
             self.clear_screen()
-            self.display_banner()
             choice = self.display_menu()
             
             if choice == '1':
@@ -74,20 +52,17 @@ class CommandLineInterface:
             elif choice == '7':
                 self._unblock_ip()
             elif choice == '8':
+                self.generate_summary_report()
+            elif choice == '9':
                 self._exit()
             else:
                 print("\nInvalid choice. Press Enter to continue...")
                 input()
     
     def _start_ids(self):
-        """Start the IDS components"""
-        print("\nStarting Network-based Intrusion Detection System...")
-        
-        # Start network monitoring
         if not self.network_monitor.is_running:
             self.network_monitor.start_monitoring()
         
-        # Start detection engine
         if not self.detection_engine.is_running:
             self.detection_engine.start_detection()
         
@@ -95,15 +70,10 @@ class CommandLineInterface:
         print("Press Enter to return to the menu...")
         input()
     
-    def _stop_ids(self):
-        """Stop the IDS components"""
-        print("\nStopping Network-based Intrusion Detection System...")
-        
-        # Stop detection engine first
+    def _stop_ids(self):        
         if self.detection_engine.is_running:
-            self.detection_engine.stop_detection()
+            self.detection_engine.stop_detection_system()
         
-        # Then stop network monitoring
         if self.network_monitor.is_running:
             self.network_monitor.stop_monitoring()
         
@@ -112,43 +82,34 @@ class CommandLineInterface:
         input()
     
     def _view_live_traffic(self):
-        """View live network traffic"""
         self.clear_screen()
         print("\n=== Live Network Traffic ===")
         print("Press Ctrl+C to return to the menu\n")
         
-        # Enable debug mode to see live traffic
         original_debug_mode = getattr(self.network_monitor, 'debug_mode', False)
         self.network_monitor.set_debug_mode(True)
         
         try:
-            # If monitoring is not running, start it temporarily
             temp_started = False
             if not self.network_monitor.is_running:
                 self.network_monitor.start_monitoring()
                 temp_started = True
             
-            # Wait and display traffic
             while True:
                 time.sleep(0.1)
         except KeyboardInterrupt:
-            # Restore original debug mode
             self.network_monitor.set_debug_mode(original_debug_mode)
             
-            # If we temporarily started monitoring, stop it
             if temp_started and self.network_monitor.is_running:
                 self.network_monitor.stop_monitoring()
     
     def _view_intrusion_logs(self):
-        """View intrusion logs from the IDS log file"""
         self.clear_screen()
         print("\n=== Intrusion Detection Logs ===\n")
-        
         logs = self.logger.get_logs()
         if not logs:
             print("No intrusion logs found.")
         else:
-            # Display most recent 10 logs, or all if less than 10
             recent_logs = logs[-10:] if len(logs) > 10 else logs
             for log in recent_logs:
                 print(log)
@@ -157,7 +118,6 @@ class CommandLineInterface:
         input()
     
     def _display_blocked_ips(self):
-        """Display the list of blocked IPs"""
         self.clear_screen()
         print("\n=== Blocked IP Addresses ===\n")
         
@@ -174,7 +134,6 @@ class CommandLineInterface:
         input()
     
     def _clear_block_list(self):
-        """Clear the entire block list"""
         self.clear_screen()
         print("\n=== Clear Block List ===\n")
         
@@ -189,7 +148,6 @@ class CommandLineInterface:
         input()
     
     def _unblock_ip(self):
-        """Unblock a specific IP address"""
         self.clear_screen()
         print("\n=== Unblock IP Address ===\n")
         
@@ -206,17 +164,98 @@ class CommandLineInterface:
         input()
     
     def _exit(self):
-        """Exit the CLI and IDS system"""
         self.clear_screen()
         print("\nShutting down NIDS...")
         
-        # Stop components in proper order
         if self.detection_engine.is_running:
-            self.detection_engine.stop_detection()
+            self.detection_engine.stop_detection_system()
         
         if self.network_monitor.is_running:
             self.network_monitor.stop_monitoring()
         
-        print("NIDS shutdown complete.")
-        print("Goodbye!")
         self.running = False
+
+    def generate_summary_report(self, log_file_path='ids.log'):
+        try:
+            total_incidents = 0
+            unique_ips = set()
+            intrusion_types = {}
+            blocked_ips = set()
+            unblocked_ips = set()
+            earliest_timestamp = None
+            latest_timestamp = None
+
+            with open(log_file_path, 'r') as file:
+                for line in file:
+                    if not line.strip():
+                        continue
+
+                    try:
+                        timestamp_str = line.split(' —')[0]
+                    except IndexError:
+                        continue  
+
+                    if earliest_timestamp is None or timestamp_str < earliest_timestamp:
+                        earliest_timestamp = timestamp_str
+                    if latest_timestamp is None or timestamp_str > latest_timestamp:
+                        latest_timestamp = timestamp_str
+
+                    if "Intrusion Type:" in line:
+                        total_incidents += 1
+
+                        if "Intrusion Type: " in line:
+                            try:
+                                intrusion_type = line.split("Intrusion Type: ")[1].split(" —")[0]
+                                intrusion_types[intrusion_type] = intrusion_types.get(intrusion_type, 0) + 1
+                            except IndexError:
+                                continue
+
+                        if "Attacker IP: " in line:
+                            try:
+                                ip = line.split("Attacker IP: ")[1].split(" —")[0]
+                                unique_ips.add(ip)
+                            except IndexError:
+                                continue
+
+                    elif "BLOCK" in line and "Blocked IP " in line:
+                        try:
+                            ip = line.split("Blocked IP ")[1].split(" for")[0]
+                            blocked_ips.add(ip)
+                        except IndexError:
+                            continue
+
+                    elif "UNBLOCK" in line and "Unblocked IP " in line:
+                        try:
+                            ip = line.split("Unblocked IP ")[1].strip()
+                            unblocked_ips.add(ip)
+                        except IndexError:
+                            continue
+
+            print("\n" + "="*50)
+            print("               IDS SUMMARY REPORT")
+            print("="*50)
+            print(f"Period: {earliest_timestamp} to {latest_timestamp}")
+            print(f"Total Intrusion Incidents: {total_incidents}")
+            print(f"Unique Attacker IPs: {len(unique_ips)}")
+
+            print("\nIntrusion Types Breakdown:")
+            for intrusion_type, count in intrusion_types.items():
+                print(f"  - {intrusion_type}: {count} incidents")
+
+            print("\nBlocking Statistics:")
+            print(f"  - Total IPs Blocked: {len(blocked_ips)}")
+            print(f"  - Total IPs Unblocked: {len(unblocked_ips)}")
+            print(f"  - Currently Blocked IPs: {len(blocked_ips - unblocked_ips)}")
+
+            if blocked_ips - unblocked_ips:
+                print("\nCurrently Blocked IPs:")
+                for ip in blocked_ips - unblocked_ips:
+                    print(f"  - {ip}")
+
+            print("="*50)
+
+        except FileNotFoundError:
+            print(f"Error: Log file '{log_file_path}' not found.")
+        except Exception as e:
+            print(f"Error generating summary report: {e}")
+
