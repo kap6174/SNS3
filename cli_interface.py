@@ -62,7 +62,6 @@ Enter your choice: """
         if not self.detection_engine.is_running:
             self.detection_engine.start_detection()
         
-        print("\nIDS is now running and monitoring network traffic.")
     
     def _stop_ids(self):        
         if self.detection_engine.is_running:
@@ -71,7 +70,6 @@ Enter your choice: """
         if self.network_monitor.is_running:
             self.network_monitor.stop_monitoring()
         
-        print("\nIDS has been stopped.")
     
     def _view_live_traffic(self):
         self.clear_screen()

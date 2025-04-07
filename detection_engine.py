@@ -21,6 +21,7 @@ class DetectionEngine:
     
     def start_detection(self):
         if self.is_running:
+            print("IDS Already running")
             return
         
         self.stop_detection.clear()
@@ -37,6 +38,7 @@ class DetectionEngine:
     
     def stop_detection_system(self):
         if not self.is_running:
+            print("IDS was not running")
             return
         
         self.stop_detection.set()
@@ -69,41 +71,52 @@ class DetectionEngine:
         dst_ip = packet_info['dst_ip']
         dst_port = packet_info['dst_port']
         current_time = packet_info['timestamp']
-        current_time = packet_info.get('timestamp')
         if not isinstance(current_time, datetime):
             print(f"Invalid timestamp for packet: {packet_info}")
             return
+        
         with self.tracker_lock:
             if src_ip not in self.port_scan_tracker:
                 self.port_scan_tracker[src_ip] = {}
             
-            #scan_window_key = (dst_ip, current_time.strftime('%Y%m%d%H%M'))
-            scan_window_key = f"{dst_ip}-{int(current_time.timestamp() // 15)}"
-
-            if scan_window_key not in self.port_scan_tracker[src_ip]:
-                self.port_scan_tracker[src_ip][scan_window_key] = {
+            window_key = f"{dst_ip}-{int(current_time.timestamp() // 15)}"
+            
+            if window_key not in self.port_scan_tracker[src_ip]:
+                self.port_scan_tracker[src_ip][window_key] = {
                     'start_time': current_time,
                     'ports': set(),
+                    'destinations': set(),
                     'reported': False
                 }
             
-            self.port_scan_tracker[src_ip][scan_window_key]['ports'].add(dst_port)
+            self.port_scan_tracker[src_ip][window_key]['ports'].add(dst_port)
+            self.port_scan_tracker[src_ip][window_key]['destinations'].add(dst_ip)
             
-            window_data = self.port_scan_tracker[src_ip][scan_window_key]
-            if (len(window_data['ports']) > 6 and 
-                not window_data['reported'] and
-                (current_time - window_data['start_time']).total_seconds() <= 15):
+            merged_ports = set()
+            earliest_time = current_time
+            
+            for key, window in self.port_scan_tracker[src_ip].items():
+                if (current_time - window['start_time']).total_seconds() <= 30:
+                    merged_ports.update(window['ports'])
+                    if window['start_time'] < earliest_time:
+                        earliest_time = window['start_time']
+            
+            window_data = self.port_scan_tracker[src_ip][window_key]
+            if (len(merged_ports) > 6 and 
+                not window_data['reported']):
                 
-                time_span = (current_time - window_data['start_time']).total_seconds()
+                time_span = (current_time - earliest_time).total_seconds()
                 
-                window_data['reported'] = True
+                for key, window in self.port_scan_tracker[src_ip].items():
+                    if (current_time - window['start_time']).total_seconds() <= 30:
+                        window['reported'] = True
                 
                 alert_info = {
                     'timestamp': current_time,
                     'intrusion_type': 'Multiple Port Scanning',
                     'src_ip': src_ip,
-                    'dst_ip': dst_ip,
-                    'targeted_ports': sorted(list(window_data['ports'])),
+                    'dst_ip': list(window_data['destinations'])[0] if window_data['destinations'] else 'multiple',
+                    'targeted_ports': sorted(list(merged_ports)),
                     'time_span': f"{time_span:.2f}s",
                     'action': 'block'
                 }
@@ -116,7 +129,6 @@ class DetectionEngine:
         dst_ip = packet_info['dst_ip']
         dst_port = packet_info['dst_port']
         current_time = packet_info['timestamp']
-        current_time = packet_info.get('timestamp')
         if not isinstance(current_time, datetime):
             print(f"Invalid timestamp for packet: {packet_info}")
             return
@@ -143,26 +155,26 @@ class DetectionEngine:
             window_data['ports'].append(dst_port)
             window_data['last_access'] = current_time
             
-        if len(window_data['ports']) >= 4 and not window_data['reported']:
-            last_four = window_data['ports'][-4:]
-            is_sequential = self._check_sequential_pattern(last_four)
-            
-            if is_sequential:
-                time_span = (current_time - window_data['start_time']).total_seconds()
-                window_data['reported'] = True
+            if len(window_data['ports']) >= 4 and not window_data['reported']:
+                last_four = window_data['ports'][-4:]
+                is_sequential = self._check_sequential_pattern(last_four)
                 
-                alert_info = {
-                    'timestamp': current_time,
-                    'intrusion_type': 'Sequential Port Scanning',
-                    'src_ip': src_ip,
-                    'dst_ip': dst_ip,
-                    'targeted_ports': last_four, 
-                    'time_span': f"{time_span:.2f}s",
-                    'action': 'block'
-                }
+                if is_sequential:
+                    time_span = (current_time - window_data['start_time']).total_seconds()
+                    window_data['reported'] = True
+                    
+                    alert_info = {
+                        'timestamp': current_time,
+                        'intrusion_type': 'Sequential Port Scanning',
+                        'src_ip': src_ip,
+                        'dst_ip': dst_ip,
+                        'targeted_ports': last_four, 
+                        'time_span': f"{time_span:.2f}s",
+                        'action': 'block'
+                    }
                 
-                self.logger.log_intrusion(alert_info)
-                self.alert_queue.put(alert_info)
+                    self.logger.log_intrusion(alert_info)
+                    self.alert_queue.put(alert_info)
 
 
     def _check_sequential_pattern(self, ports):
@@ -182,10 +194,10 @@ class DetectionEngine:
         dst_ip = packet_info['dst_ip']
         flags = packet_info['flags']
         current_time = packet_info['timestamp']
-        current_time = packet_info.get('timestamp')
         if not isinstance(current_time, datetime):
             print(f"Invalid timestamp for packet: {packet_info}")
             return
+        
         if 'S' not in str(flags) and 'A' not in str(flags) and 'F' not in str(flags):
             return
         

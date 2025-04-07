@@ -60,8 +60,6 @@ class NetworkMonitor:
                 src_port = packet[TCP].sport
                 dst_port = packet[TCP].dport
                 flags = self._tcp_flags_to_str(packet[TCP].flags)
-            elif ICMP in packet:
-                protocol = 'ICMP'
             else:
                 return
                 
@@ -71,7 +69,7 @@ class NetworkMonitor:
 
             now = datetime.now()
             self.seen_packets = {sig: ts for sig, ts in self.seen_packets.items() 
-                                 if now - ts < timedelta(seconds=5)}
+                                 if now - ts < timedelta(seconds=2)}
 
             if signature in self.seen_packets:
                 return

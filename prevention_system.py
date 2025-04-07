@@ -12,7 +12,7 @@ class PreventionSystem:
             return True
             
         try:
-            cmd = f"iptables -A INPUT -s {ip_address} -j DROP"
+            cmd = f"sudo iptables -A INPUT -s {ip_address} -j DROP"
             subprocess.run(cmd, shell=True, check=True)
             
             current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
@@ -31,17 +31,26 @@ class PreventionSystem:
     def unblock_ip(self, ip_address):
         if ip_address not in self.blocked_ips:
             return False
-            
-        try:
-            cmd = f"iptables -D INPUT -s {ip_address} -j DROP"
-            subprocess.run(cmd, shell=True, check=True)
-            del self.blocked_ips[ip_address]
+
+        success = False
+        while True:
+            try:
+                cmd = f"sudo iptables -D INPUT -s {ip_address} -j DROP"
+                subprocess.run(cmd, shell=True, check=True,
+                           stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+                success = True
+            except subprocess.CalledProcessError:
+                break
+
+        if success:
+            if ip_address in self.blocked_ips:
+                del self.blocked_ips[ip_address]
             self.logger.log_system_event("UNBLOCK", f"Unblocked IP {ip_address}")
             return True
-            
-        except subprocess.SubprocessError as e:
-            self.logger.log_system_event("ERROR", f"Failed to unblock IP {ip_address}: {e}")
+        else:
+            self.logger.log_system_event("ERROR", f"Failed to unblock IP {ip_address}")
             return False
+
     
     def get_blocked_ips(self):
         self.sync_with_system()
@@ -59,7 +68,7 @@ class PreventionSystem:
         blocked_ips = []
     
         try:
-            cmd = "iptables -L INPUT -n"
+            cmd = "sudo iptables -L INPUT -n"
             output = subprocess.check_output(cmd, shell=True, text=True)
             
             for line in output.splitlines():

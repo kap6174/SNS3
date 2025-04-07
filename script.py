@@ -12,7 +12,7 @@ class IDSTester:
         self.target_ip = target_ip
         self.verbose = True
         #self.source_ip = socket.gethostbyname("localhost")
-        self.source_ip = "192.168.0.1"
+        self.source_ip = "192.168.0.10"
         self.log(f"IDS Tester initialized. Target: {target_ip}, Source: {self.source_ip}")
     
     def log(self, message):
@@ -45,7 +45,7 @@ class IDSTester:
     
     def os_fingerprint(self, num_attempts=6, delay=1.0, target_port=None):
         flag_combinations = [
-            "S", "SA", "F", "FA", "SF", "PA", "R", "RA", "", "FSPU", "FPU"
+            "S", "SA", "F", "FA", "SF", "PA", "RA", "FSPU", "FPU"
         ]
         
         if num_attempts > len(flag_combinations):
