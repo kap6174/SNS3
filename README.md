@@ -2,7 +2,7 @@
 
 ## Description
 
-This is a simple Network Intrusion Detection System (NIDS) built with Python and Scapy. It monitors network traffic, detects potential intrusions such as port scanning and OS fingerprinting, logs alerts, and can block suspicious IP addresses using iptables.
+This is a simple Network Intrusion Detection System (NIDPS) built with Python and Scapy. It monitors network traffic, detects potential intrusions such as port scanning and OS fingerprinting, logs alerts, and can block suspicious IP addresses using iptables.
 
 ## Features
 
@@ -21,7 +21,7 @@ This is a simple Network Intrusion Detection System (NIDS) built with Python and
 
 ## Installation
 
-Follow these steps to set up the NIDS on your system:
+Follow these steps to set up the NIDPS on your system:
 
 1. **Install Python**:  
    Ensure Python 3.x is installed. You can check this by running:
@@ -47,7 +47,7 @@ Follow these steps to set up the NIDS on your system:
 
 ## Usage
 
-Run the Main Script: Execute the NIDS with `sudo` privileges due to the need for raw packet access and iptables modifications:
+Run the Main Script: Execute the NIDPS with `sudo` privileges due to the need for raw packet access and iptables modifications:
 ```bash
 sudo ~/scapy-env/bin/python main.py
 ```
@@ -65,7 +65,7 @@ Upon running, a menu will appear with the following options:
 6. Clear Block List: Unblocks all IPs after confirmation.  
 7. Unblock an IP: Unblocks a specific IP address.  
 8. Generate Summary Report: Displays a summary of incidents and blocking statistics.  
-9. Exit: Shuts down the NIDS.  
+9. Exit: Shuts down the NIDPS.  
 
 ## Configuration
 
@@ -78,7 +78,7 @@ Replace `"eth0"` with your desired interface. You can find available interfaces 
 
 ## Implementation Overview
 
-The NIDS is composed of several modular components:
+The NIDPS is composed of several modular components:
 
 ### NetworkMonitor (`network_monitor.py`)
 - Captures TCP packets using Scapy on the specified interface.
